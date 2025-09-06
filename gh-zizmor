@@ -1,35 +1,56 @@
 #!/usr/bin/env bash
 set -e
 
-echo "Hello gh-zizmor!"
+if ! type -p zizmor >/dev/null; then
+  echo "Zizmor not found on the system" >&2
+  echo "Please install zizmor: https://docs.zizmor.sh/installation/" >&2
+  exit 1
+fi
 
-# Snippets to help get started:
+# handle --help/-h and --version flags directly
+if [[ "$1" == "--help" || "$1" == "-h" || "$1" == "--version" ]]; then
+  exec zizmor "$@"
+fi
 
-# Determine if an executable is in the PATH
-# if ! type -p ruby >/dev/null; then
-#   echo "Ruby not found on the system" >&2
-#   exit 1
-# fi
+# check if lsp command is being used
+if [[ "$1" == "lsp" ]]; then
+  echo "For LSP functionality, please call 'zizmor lsp' directly" >&2
+  exit 1
+fi
 
-# Pass arguments through to another command
-# gh issue list "$@" -R cli/cli
+# check if --gh-token flag is already provided
+has_gh_token=false
+for arg in "$@"; do
+  if [[ "$arg" == --gh-token* ]]; then
+    has_gh_token=true
+    break
+  fi
+done
 
-# Using the gh api command to retrieve and format information
-# QUERY='
-#   query($endCursor: String) {
-#     viewer {
-#       repositories(first: 100, after: $endCursor) {
-#         nodes {
-#           nameWithOwner
-#           stargazerCount
-#         }
-#       }
-#     }
-#   }
-# '
-# TEMPLATE='
-#   {{- range $repo := .data.viewer.repositories.nodes -}}
-#     {{- printf "name: %s - stargazers: %v\n" $repo.nameWithOwner $repo.stargazerCount -}}
-#   {{- end -}}
-# '
-# exec gh api graphql -f query="${QUERY}" --paginate --template="${TEMPLATE}"
+# Check for completion related flags
+for arg in "$@"; do
+  if [[ "$arg" == "--generate-completion" || "$arg" == "--completion" || "$arg" == "--generate-shell-completion" ]]; then
+    echo "For completion functionality, please call 'zizmor' with completion flags directly" >&2
+    exit 1
+  fi
+done
+
+# If no --gh-token provided, get token and add it
+if [[ "$has_gh_token" == "false" ]]; then
+  TOKEN=$(gh auth token)
+
+  if [ -z "$TOKEN" ]; then
+    echo "Failed to retrieve GitHub token" >&2
+    exit 1
+  fi
+
+  # If no arguments provided, use default directory
+  if [ $# -eq 0 ]; then
+    exec zizmor --gh-token="$TOKEN" ./.github/workflows
+  else
+    exec zizmor --gh-token="$TOKEN" "$@"
+  fi
+else
+  # --gh-token already provided, pass through all arguments
+  exec zizmor "$@"
+fi
