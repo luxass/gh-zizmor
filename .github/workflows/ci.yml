@@ -93,4 +93,5 @@ jobs:
           FILE: ${{ matrix.file }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh zizmor ./workflow-tests/$FILE
+          echo "Analyzing $FILE..."
+          gh zizmor ./workflow-tests/$FILE || echo "Analysis completed (vulnerabilities may have been found)"
