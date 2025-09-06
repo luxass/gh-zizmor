@@ -27,7 +27,7 @@ for arg in "$@"; do
   fi
 done
 
-# Check for completion related flags
+# check for completion related flags
 for arg in "$@"; do
   if [[ "$arg" == "--generate-completion" || "$arg" == "--completion" || "$arg" == "--generate-shell-completion" ]]; then
     echo "For completion functionality, please call 'zizmor' with completion flags directly" >&2
@@ -35,7 +35,9 @@ for arg in "$@"; do
   fi
 done
 
-# If no --gh-token provided, get token and add it
+GIT_REPOSITORY_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || true)
+
+# if no --gh-token provided, get token and add it
 if [[ "$has_gh_token" == "false" ]]; then
   TOKEN=$(gh auth token)
 
@@ -44,9 +46,9 @@ if [[ "$has_gh_token" == "false" ]]; then
     exit 1
   fi
 
-  # If no arguments provided, use default directory
+  # if no arguments provided, use default directory
   if [ $# -eq 0 ]; then
-    exec zizmor --gh-token="$TOKEN" ./.github/workflows
+    exec zizmor --gh-token="$TOKEN" "$GIT_REPOSITORY_ROOT/.github/workflows"
   else
     exec zizmor --gh-token="$TOKEN" "$@"
   fi
