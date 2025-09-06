@@ -1,0 +1,28 @@
+name: Vulnerable Permissions
+
+on:
+  pull_request_target:  # Dangerous with write permissions
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+  # Overly broad permissions
+
+jobs:
+  dangerous-permissions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}  # Checking out untrusted code
+          
+      - name: Run untrusted code
+        run: |
+          # This could execute malicious code from a PR
+          if [ -f "./run-tests.sh" ]; then
+            chmod +x ./run-tests.sh
+            ./run-tests.sh
+          fi

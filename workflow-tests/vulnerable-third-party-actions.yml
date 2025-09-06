@@ -1,0 +1,30 @@
+name: Vulnerable Third Party Actions
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unsafe-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3  # Outdated version
+      
+      # Using actions without pinning to specific commits
+      - uses: some-org/dangerous-action@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      # Using unverified third-party action
+      - uses: random-user/suspicious-action@v1
+        with:
+          api-key: ${{ secrets.API_KEY }}
+      
+      # Action with overly permissive inputs
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const userInput = '${{ github.event.head_commit.message }}';
+            // Vulnerable to code injection
+            eval(`console.log("${userInput}")`);
