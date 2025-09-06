@@ -44,6 +44,8 @@ jobs:
       - name: install gh-zizmor extension
         run: |
           gh extension install .
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: verify it works
         run: |
@@ -79,6 +81,8 @@ jobs:
       - name: install gh-zizmor extension
         run: |
           gh extension install .
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: verify it works
         run: |
