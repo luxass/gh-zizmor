@@ -4,8 +4,8 @@ release VERSION:
 
     # validate version format (v followed by semantic version)
     if [[ ! "{{VERSION}}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-        echo "Error: Version must be in format vX.Y.Z (e.g., v1.0.0)"
-        exit 1
+      echo "Error: Version must be in format vX.Y.Z (e.g., v1.0.0)"
+      exit 1
     fi
 
     # create and push the tag
