@@ -1,4 +1,3 @@
-# Release a new version
 release VERSION:
     #!/usr/bin/env bash
     set -euo pipefail
