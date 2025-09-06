@@ -91,5 +91,6 @@ jobs:
       - name: run zizmor analysis
         env:
           FILE: ${{ matrix.file }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh zizmor ./workflow-tests/$FILE
