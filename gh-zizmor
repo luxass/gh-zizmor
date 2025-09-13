@@ -59,6 +59,17 @@ for arg in "$@"; do
 done
 
 GIT_REPOSITORY_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || true)
+HAS_INPUT_FILES=false
+
+# if there is arguments, but they start with --, assume no input files
+if [ $# -gt 0 ]; then
+  for arg in "$@"; do
+    if [[ "$arg" != --* ]]; then
+      HAS_INPUT_FILES=true
+      break
+    fi
+  done
+fi
 
 # if no --gh-token provided, get token and add it
 if [[ "$has_gh_token" == "false" ]]; then
@@ -69,8 +80,8 @@ if [[ "$has_gh_token" == "false" ]]; then
     exit 1
   fi
 
-  # if no arguments provided, use default directory
-  if [ $# -eq 0 ]; then
+  # use default directory unless user provided input files
+  if [ "$HAS_INPUT_FILES" = false ]; then
     exec zizmor --gh-token="$TOKEN" "$GIT_REPOSITORY_ROOT/.github/workflows"
   else
     exec zizmor --gh-token="$TOKEN" "$@"
