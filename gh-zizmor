@@ -82,7 +82,7 @@ if [[ "$has_gh_token" == "false" ]]; then
 
   # use default directory unless user provided input files
   if [ "$HAS_INPUT_FILES" = false ]; then
-    exec zizmor --gh-token="$TOKEN" "$GIT_REPOSITORY_ROOT/.github/workflows"
+    exec zizmor --gh-token="$TOKEN" "$GIT_REPOSITORY_ROOT/.github/workflows" "$@"
   else
     exec zizmor --gh-token="$TOKEN" "$@"
   fi
