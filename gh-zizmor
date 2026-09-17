@@ -30,15 +30,15 @@ fi
 
 check_version_update
 
-# handle --help/-h and --version flags directly
-if [[ "$1" == "--help" || "$1" == "-h" || "$1" == "--version" ]]; then
+# handle --help/-h and --version/-V flags directly
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" || "${1:-}" == "--version" || "${1:-}" == "-V" ]]; then
   exec zizmor "$@"
 fi
 
-# check if lsp command is being used
-if [[ "$1" == "lsp" ]]; then
-  echo "For LSP functionality, please call 'zizmor lsp' directly" >&2
-  exit 1
+# check if lsp mode is being used (--lsp flag; legacy `lsp` subcommand)
+# --lsp cannot be combined with other flags, so pass through without injecting --gh-token
+if [[ "${1:-}" == "--lsp" || "${1:-}" == "lsp" ]]; then
+  exec zizmor "$@"
 fi
 
 # check if --gh-token flag is already provided
@@ -51,10 +51,10 @@ for arg in "$@"; do
 done
 
 # check for completion related flags
+# --completions cannot be combined with other args, so pass through without injecting --gh-token
 for arg in "$@"; do
-  if [[ "$arg" == "--generate-completion" || "$arg" == "--completion" || "$arg" == "--generate-shell-completion" ]]; then
-    echo "For completion functionality, please call 'zizmor' with completion flags directly" >&2
-    exit 1
+  if [[ "$arg" == "--completions"* || "$arg" == "--generate-completion" || "$arg" == "--completion" || "$arg" == "--generate-shell-completion" ]]; then
+    exec zizmor "$@"
   fi
 done
 
